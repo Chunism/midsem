@@ -42,7 +42,6 @@ export async function generateVoice(
   text: string,
   speaker_url: string = "https://cdn.themetavoice.xyz/speakers/bria.mp3"
 ) {
-  console.log("generating audio");
   const response = await fetch(`https://fal.run/fal-ai/metavoice-v1`, {
     method: "POST",
     headers: {
@@ -59,14 +58,12 @@ export async function generateVoice(
   });
 
   const responseJSON = await response.json();
-  console.log(responseJSON);
 
   return responseJSON?.audio_url.url;
 }
 
 //Speech to text with Whisper
 export async function speechToText(audio_url: string = "") {
-  console.log("generating audio");
   const response = await fetch(`https://fal.run/fal-ai/whisper`, {
     method: "POST",
     headers: {
@@ -84,7 +81,6 @@ export async function speechToText(audio_url: string = "") {
   });
 
   const responseJSON = await response.json();
-  console.log(responseJSON);
 
   return responseJSON?.chunks;
 }
