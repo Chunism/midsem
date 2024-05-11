@@ -2,15 +2,16 @@
 
 import Groq from "groq-sdk";
 import { useState, useEffect } from "react";
-import { generateImageFal } from "./ai";
-import ReactPlayer from "react-player";
+import { generateImageFal, generateImageFalSVD, getGeminiText } from "./ai";
+import { aboriginalpdf } from "../data";
+import { generateVoice, speechToText } from "@/ai/fal";
 
 const groq = new Groq({
-  apiKey: "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",
+  apiKey: "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",
   dangerouslyAllowBrowser: true,
 });
 
-export default function AlternateTides({ description }: { description: string}) {
+export default function AlternateTides({ description }: { description: string }) {
   const defaultGameState = {
     year: 1770,
     culturalAssimilation: "Minimal, Aboriginal culture largely intact",
@@ -18,7 +19,7 @@ export default function AlternateTides({ description }: { description: string}) 
     currentPoliticalChallenges: "Colonizers face moral dilemmas",
     warAndConflict: "Potential for conflict looms",
     lossOfIdentityChallenges: "Aboriginal culture threatened by colonization",
-    event: description ?? "The year is 1770, and the continent of Australia is home to a thriving Aboriginal population with rich cultural traditions. As European explorers arrive on the shores, a pivotal moment in history emerges. The collision of two vastly different worlds sets the stage for a complex and often tragic narrative. The Aboriginal people face the threat of dispossession, disease, and cultural erosion, while the colonizers grapple with the moral dilemmas of their actions. As a key figure in this unfolding story, your decisions will shape the future of Australia and its people. Will you champion the cause of the Aboriginal people, fighting for their rights and preserving their heritage? Or will you prioritize the interests of the colonizers, seeking to establish a new society at any cost? The path you choose will have far-reaching consequences, echoing through generations. Brace yourself for a journey that will test your resolve, challenge your beliefs, and forever alter the course of history. Welcome to 'Alternate Tides: A New Dawn for Australia",
+    event: "The year is 1770, and the continent of Australia is home to a thriving Aboriginal population with rich cultural traditions. As European explorers arrive on the shores, a pivotal moment in history emerges. The collision of two vastly different worlds sets the stage for a complex and often tragic narrative. The Aboriginal people face the threat of dispossession, disease, and cultural erosion, while the colonizers grapple with the moral dilemmas of their actions. As a key figure in this unfolding story, your decisions will shape the future of Australia and its people. Will you champion the cause of the Aboriginal people, fighting for their rights and preserving their heritage? Or will you prioritize the interests of the colonizers, seeking to establish a new society at any cost? The path you choose will have far-reaching consequences, echoing through generations. Brace yourself for a journey that will test your resolve, challenge your beliefs, and forever alter the course of history. Welcome to 'Alternate Tides: A New Dawn for Australia",
     actions: [
       "Relocate the native population so that they move to designated sites and confiscate the land.",
       "Prioritize the expansion of economic and resource development in colonies to accelerate regional growth.",
@@ -26,13 +27,19 @@ export default function AlternateTides({ description }: { description: string}) 
       "Enact laws to protect Aboriginal cultural sites and sacred places and support cultural heritage."
     ],
     selectedAction: "",
-  
+    history: [],
+    conclusion: ""
+
   };
 
   const [game, setGame] = useState(defaultGameState);
   const [img, setImg] = useState("");
   const [fetching, setFetching] = useState(false);
+  const [conclusionFetching, setConclusionFetching] = useState(false);
   const [analysis, setAnalysis] = useState<{ [key: string]: string }>({});
+  const [gameDone, setGameDone] = useState(false);
+  const [videosFalUrl, setVideoFalUrl] = useState();
+  const [speech, setSpeech] = useState(); 
 
   const generateImage = async (imageDescription: string) => {
     setFetching(true);
@@ -46,27 +53,77 @@ export default function AlternateTides({ description }: { description: string}) 
       setFetching(false);
     }
   };
+  
+  useEffect(() => {
+    // const interval = setInterval(() => {
+    const imageDescription = `Generate an image that represents the state of Aboriginal culture and society in Australia during the year ${game.year}. Show the influence of European contact and the effects of the decisions made in the game. Highlight the unique aspects of Aboriginal art, architecture, and way of life. Depict the level of cultural preservation and the interactions between Aboriginal people and European settlers based on the game state: ${JSON.stringify(game)}, the game event: ${game.event}, and the selected action: ${game.selectedAction}.`;
+    generateImage(imageDescription);
+   
+    (async () => {
+        const video =  await generateImageFalSVD(imageDescription, img)
+        console.log(video)
+        setVideoFalUrl(video?.url)
+    })()
+
+    // }, 8000);
+
+    // return () => clearInterval(interval);
+  }, [game.actions]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const imageDescription = `Generate an image that represents the state of Aboriginal culture and society in Australia during the year ${game.year}. Show the influence of European contact and the effects of the decisions made in the game. Highlight the unique aspects of Aboriginal art, architecture, and way of life. Depict the level of cultural preservation and the interactions between Aboriginal people and European settlers based on the game state: ${JSON.stringify(game)}, the game event: ${game.event}, and the selected action: ${game.selectedAction}.`;
-      generateImage(imageDescription);
-    }, 10000);
+    setConclusionFetching(true)
 
-    return () => clearInterval(interval);
-  }, [game]);
+    if (game.year >= 1790 && !Boolean(gameDone)) {
+
+      (async () => {
+        const testGemini = await getGeminiText(`\
+        
+          The current game state is:
+          {
+            "year": ${game.year},
+            "culturalAssimilation": "${game.culturalAssimilation}",
+            "reconciliation": "${game.reconciliation}",
+            "currentPoliticalChallenges": "${game.currentPoliticalChallenges}",
+            "warAndConflict": "${game.warAndConflict}",
+            "lossOfIdentityChallenges": "${game.lossOfIdentityChallenges}",
+            "history":${game.history}
+          }
+          
+          "history" here refers to the player past decisions. And aboriginal knowleged: ${aboriginalpdf}
+          Make a conclusion of the new world in the aspects of culture heritage, politics, aboriginal values, reconciliation and judge if this society will prosper.
+          Do not respond in markdown but strictly json format
+        
+        `);
+
+        setGame(prevState => {
+          const newState = {
+            ...prevState,
+            conclusion: testGemini
+          };
+          return newState;
+        });
+        setGameDone(true)
+      })()
+
+
+    }
+
+    setConclusionFetching(false);
+
+  }, [game])
+
 
   useEffect(() => {
     const generateAnalysis = async () => {
       const analysisPromises = game.actions.map(async (action) => {
-        const analysisPrompt = `Analyze the consequences of selecting the action "${action}" in the current game state: ${JSON.stringify(game, null, 2)} within 50 words.`;
+        const analysisPrompt = `Analyze the consequences of selecting the action "${action}" in the current game state: ${JSON.stringify(game, null, 2)} within 80 words.`;
         const MAX_RETRIES = 3;
         let retries = 0;
         let analysisResponse = "";
 
         while (retries < MAX_RETRIES) {
           try {
-            analysisResponse = await ai(analysisPrompt, 512, "", "mixtral-8x7b-32768");
+            analysisResponse = await ai(analysisPrompt, 512, "", "llama3-8b-8192");
             break;
           } catch (error) {
             console.error(`Error generating analysis for action "${action}":`, error);
@@ -125,6 +182,8 @@ export default function AlternateTides({ description }: { description: string}) 
       "selectedAction": "string"
     }
 
+    
+
     Progress the year by 10 years each time a decision is made. This simulates long-term effects and developments, aligning with historical contexts and potential alternative outcomes.
 
     Only output the JSON object with no other text or explanation. JSON OBJECT: {`;
@@ -137,6 +196,7 @@ export default function AlternateTides({ description }: { description: string}) 
 
     try {
       const gameState = await ai(userPrompt, 3000, systemPrompt, "llama3-70b-8192");
+
 
       if (gameState) {
         try {
@@ -153,25 +213,39 @@ export default function AlternateTides({ description }: { description: string}) 
             "warAndConflict": "${updatedGameState.warAndConflict}",
             "lossOfIdentityChallenges": "${updatedGameState.lossOfIdentityChallenges}",
             "actions": ${JSON.stringify(updatedGameState.actions)},
-            "selectedAction": "${buttonText}"
+            "selectedAction": "${buttonText}-${analysisText}"
           }
 
           Generate the game event as a string value for the "event" field. Format the response as follows:
           {
             "event": "string"
           }
+          
+          Don't render in markdown, give the response as a json
 
-          Only output the JSON object with no other text or explanation.JSON OBJECT: {`;
+          Only output the JSON object with no other text or explanation. 
+          
+          ${aboriginalpdf}
+          `;
+
+
+
+          const testGemini = await getGeminiText(eventPrompt);
+
+          const voice = await generateVoice(game.event);
+          setSpeech(voice);
+          
 
 
           setGame(prevState => {
             const newState = {
               ...prevState,
               ...updatedGameState,
-              //event: description,
+              event: JSON.parse(testGemini)?.event,
               actions: updatedGameState.actions || [],
-              selectedAction: buttonText,
+              selectedAction: `${buttonText}-${analysisText}`,
               year: prevState.year + 10,
+              history: [...prevState.history, `${buttonText}-${analysisText}`]
             };
             return newState;
           });
@@ -210,13 +284,20 @@ export default function AlternateTides({ description }: { description: string}) 
     }
   }
 
+
+
   return (
     <div className="background">
-      <audio
-        src=""
-        autoPlay={true}
-        loop={true}
-      />
+      {
+        speech && (
+          <audio
+            src=""
+            autoPlay={true}
+            loop={true}
+          />
+        )
+      }
+    
       <div className="title">WORLD ENGINE</div>
       <div className="navbar">
         <div>Year: {game.year}</div>
@@ -226,35 +307,51 @@ export default function AlternateTides({ description }: { description: string}) 
         <div>War and Conflict: {game.warAndConflict}</div>
         <div>Loss of Identity Challenges: {game.lossOfIdentityChallenges}</div>
       </div>
-      <div>{game.event}</div>
 
-      <div className="row hero">
-        <div className="GameTitleC">Alternate Tides</div>
-        <div className="GameTitle">A New Dawn for Australia</div>
-        {img && <img className="HeroImage" src={img} alt="Generated Image" />}
-      </div>
 
-      {game.actions.map((action, index) => (
-        <div key={index}>
-          <button onClick={() => handleClick(action.toString())}>
-            {action}
-          </button>
-          <div>{analysis[action.toString()] || 'Loading analysis...'}</div>
-        </div>
-      ))}
+      {
+        game.year >= 1790 ? <>   {conclusionFetching && <p>Generating game conclusion. please wait for awhile</p>} <p>{game.conclusion}</p></> : (
+          <>
+            <div>{game.event}</div>
+            <div className="row hero">
+              <div className="GameTitleC">Alternate Tides</div>
+              <div className="GameTitle">A New Dawn for Australia</div>
+              {(img && !videosFalUrl) && <img className="HeroImage" src={img} alt="Generated Image" />}
 
-      <div className="empty_space">
-      </div>
-      <footer className="footer">
-        <div className="footer-content">
-          <p>&copy; {new Date().getFullYear()} Alternate Tides. ALL RIGHTS RESERVED.</p>
-          <nav className="footer-nav">
-            <div>WORLD ENGINE STUDIO</div>
-            <div>CHUN HO LAU, YUSHAN WANG, TIMOTHY JINZHI NG</div>
-            <div>RMIT ARCHITECTURE</div>
-          </nav>
-        </div>
-      </footer>
-    </div>
-  );
+              {videosFalUrl && (<>
+                <video width="960" height="640" autoPlay loop>
+                  <source src={videosFalUrl} type="video/mp4"/>
+                      Your browser does not support the video tag.
+                    </video>
+
+                  </>)}
+                </div>
+
+                {game.actions.map((action, index) => (
+                  <div key={index}>
+                    <button onClick={() => handleClick(action.toString())}>
+                      {action}
+                    </button>
+                    <div>{analysis[action.toString()] || 'Loading analysis...'}</div>
+                  </div>
+                ))}</>
+              )
+              }
+
+
+
+              <div className="empty_space">
+              </div>
+              <footer className="footer">
+                <div className="footer-content">
+                  <p>&copy; {new Date().getFullYear()} Alternate Tides. ALL RIGHTS RESERVED.</p>
+                  <nav className="footer-nav">
+                    <div>WORLD ENGINE STUDIO</div>
+                    <div>CHUN HO LAU, YUSHAN WANG, TIMOTHY JINZHI NG</div>
+                    <div>RMIT ARCHITECTURE</div>
+                  </nav>
+                </div>
+              </footer>
+            </div>
+            );
 }

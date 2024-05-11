@@ -58,8 +58,9 @@ export async function generateVoice(
   });
 
   const responseJSON = await response.json();
+  console.log(responseJSON)
 
-  return responseJSON?.audio_url.url;
+  return responseJSON?.audio_url?.url;
 }
 
 //Speech to text with Whisper
