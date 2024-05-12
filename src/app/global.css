@@ -158,6 +158,101 @@ button {
 }
 
 
+.conclusion-title {
+  color:  #ffffff;
+  outline: none; 
+  font-weight: 1000;
+  font-style: normal;
+  border: none;
+  font-family: 'Kanit';
+  line-height: 30px;
+  font-size: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+  line-height: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-right: 50px;
+  paragraph-spacing: 30px;
+  
+}
+
+
+
+
+
+.conclusion-content{
+  color:  #ffffff;
+  outline: none;
+  border: none;
+  font-family: 'Kanit';
+  line-height: 30px;
+  font-size: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+  line-height: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-right: 50px;
+  paragraph-spacing: 30px;
+  text-align: justify;      
+}
+
+
+.conclusion-reflection {
+  color:  #ffffff;
+  outline: none;
+  border: none;
+  font-family: 'Kanit';
+  line-height: 30px;
+  font-size: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+  line-height: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-right: 50px;
+  spacing: 30px;
+  text-align: justify;      
+}
+
+
+.fetchingc {
+  color:  #ffffff;
+  outline: none;
+  border: none;
+  font-family: 'Kanit';
+  line-height: 30px;
+  font-size: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+  line-height: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-right: 50px;
+  paragraph-spacing: 30px;
+  text-align: justify;      
+}
+
+
+
+.conclusion-message{
+  color:  #FA00FF;
+  background: #000;
+  outline: none;
+  border: none;
+  font-family: 'Kanit';
+  line-height: 30px;
+  font-size: 15px;
+  padding-left: 30px;
+  padding-right: 30px;
+  line-height: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-right: 50px;
+  paragraph-spacing: 30px;
+  text-align: justify;      
+}
 
 /* Dream Game */
 

@@ -90,8 +90,17 @@ export default function AlternateTides({ description }: { description: string })
           }
           
           "history" here refers to the player past decisions. And aboriginal knowleged: ${aboriginalpdf}
-          Make a conclusion of the new world in the aspects of culture heritage, politics, aboriginal values, reconciliation and judge if this society will prosper.
-          Do not respond in markdown but strictly json format
+          Based on the current state of the world and the player's decisions, create a compelling conclusion that assesses the impact of their choices on the following aspects:
+          1. The preservation and celebration of Aboriginal culture and heritage
+          2. The state of reconciliation between Aboriginal people and the wider Australian society
+          3. The political landscape and the challenges faced by the nation
+          4. The level of conflict or stability in the new world
+          5. The struggles or triumphs of the Aboriginal people in maintaining their identity
+    
+          Provide a thought-provoking analysis of the player's actions and their consequences, highlighting the key turning points and the lessons that can be learned from their journey. Conclude by reflecting on the enduring spirit of the Aboriginal people and the importance of understanding and compassion in shaping the future of Australia.
+    
+          Please respond in a JSON format with a single "conclusion" property containing the generated text. Do not use markdown formatting.
+        
         
         `);
 
@@ -232,8 +241,8 @@ export default function AlternateTides({ description }: { description: string })
 
           const testGemini = await getGeminiText(eventPrompt);
 
-          const voice = await generateVoice(game.event);
-          setSpeech(voice);
+          // const voice = await generateVoice(game.event);
+          // setSpeech(voice);
           
 
 
@@ -310,7 +319,60 @@ export default function AlternateTides({ description }: { description: string })
 
 
       {
-        game.year >= 1790 ? <>   {conclusionFetching && <p>Generating game conclusion. please wait for awhile</p>} <p>{game.conclusion}</p></> : (
+        game.year >= 1790 ? <>   <p>
+          
+          {(img && !videosFalUrl) && <img className="HeroImage" src={img} alt="Generated Image" />}
+
+{videosFalUrl && (<>
+  <video className="HeroImage" width="960" height="640" autoPlay loop>
+    <source src={videosFalUrl} type="video/mp4"/>
+        Your browser does not support the video tag.
+        </video>
+        <div className="empty_space">
+              </div>
+            <div className="conclusion-title">Welcome to the New World...</div>
+            <div className="conclusion-content">
+              <p>
+                Through your choices and actions, you have shaped the course of history and created a new world in Australia. The decisions you made have had far-reaching consequences, molding the fabric of society and the lives of countless individuals.
+              </p>
+              <p>
+                In this new world, the Aboriginal culture and knowledge have been {game.culturalAssimilation === "Preserved" ? "preserved and celebrated" : "eroded and marginalized"}. The path of {game.reconciliation} has {game.reconciliation === "Achieved" ? "brought healing and unity" : "left deep scars and divisions"}.
+              </p>
+              <p>
+                The political landscape has been shaped by {game.currentPoliticalChallenges}, leading to {game.warAndConflict === "Avoided" ? "peace and stability" : "conflict and turmoil"}. The Aboriginal people have {game.lossOfIdentityChallenges === "Overcome" ? "maintained their cultural identity" : "struggled to preserve their heritage"}.
+              </p>
+              <p>
+                {conclusionFetching && <p className="ferchingc">Generating game conclusion. please wait for awhile</p>} 
+                {game.conclusion}
+              </p>
+            </div>
+
+
+      <div className="conclusion-reflection">
+                <p>Reflect upon the world you have shaped:</p>
+                  <p>How have your choices influenced the lives of the Aboriginal people?</p>
+                  <p>What lessons can be learned from the path you have taken?</p>
+                  <p>How will the new world you have created continue to evolve?</p> 
+              </div>
+
+
+
+      <div className="conclusion-message">
+                <p>
+                  Remember, the world you have created is a testament to the power of your decisions. The legacy of your choices will echo through the generations, shaping the future of Australia and its people.
+                </p>
+                <p>
+                  Thank you for experiencing Alternate Tides: A New Dawn for Australia. May the world you have brought into being serve as a reminder of the importance of understanding, compassion, and the enduring spirit of the Aboriginal people.
+                </p>
+      </div>
+      
+
+
+
+    </>)}
+          
+          
+          </p></> : (
           <>
             <div>{game.event}</div>
             <div className="row hero">
@@ -319,7 +381,7 @@ export default function AlternateTides({ description }: { description: string })
               {(img && !videosFalUrl) && <img className="HeroImage" src={img} alt="Generated Image" />}
 
               {videosFalUrl && (<>
-                <video width="960" height="640" autoPlay loop>
+                <video className="HeroImage" width="960" height="640" autoPlay loop>
                   <source src={videosFalUrl} type="video/mp4"/>
                       Your browser does not support the video tag.
                     </video>
