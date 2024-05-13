@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { generateImageFal, generateImageFalSVD, getGeminiText } from "./ai";
 import { aboriginalpdf } from "../data";
 import { generateVoice, speechToText } from "@/ai/fal";
+import TextToSpeech from "./texttospeech";
 
 const groq = new Groq({
   apiKey: "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",
@@ -229,22 +230,22 @@ export default function AlternateTides({ description }: { description: string })
           {
             "event": "string"
           }
-          
+          ${aboriginalpdf}
+
           Don't render in markdown, give the response as a json
 
           Only output the JSON object with no other text or explanation. 
+
+          Output in JSON format,
+          Do not use markdown.
+
+          JSON:
           
-          ${aboriginalpdf}
           `;
 
 
 
           const testGemini = await getGeminiText(eventPrompt);
-
-          // const voice = await generateVoice(game.event);
-          // setSpeech(voice);
-          
-
 
           setGame(prevState => {
             const newState = {
@@ -296,16 +297,14 @@ export default function AlternateTides({ description }: { description: string })
 
 
   return (
-    <div className="background">
-      {
-        speech && (
-          <audio
-            src=""
-            autoPlay={true}
-            loop={true}
-          />
-        )
-      }
+    <div className="background w-[999px] mx-auto">
+
+    {/* <audio
+      src="https://soundcloud.com/didgeridooaboriginaldreamtime/sets/didgeridoo-with-nature-sounds?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing"
+      autoPlay={true}
+      loop={true}
+    /> */}
+
     
       <div className="title">WORLD ENGINE</div>
       <div className="navbar">
@@ -414,6 +413,8 @@ export default function AlternateTides({ description }: { description: string })
                   </nav>
                 </div>
               </footer>
+              
+      {game.event && <TextToSpeech text={game.event} showControls autoPlay/>}
             </div>
             );
 }

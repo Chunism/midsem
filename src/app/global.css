@@ -83,7 +83,7 @@ body {
   text-align: justified;
   position: absolute;
   top: 600px;
-  left: 50px;
+  left: 500px;
   font-family: "Kanit", italic;
   opacity: 0.7;
   padding-left: 10px;
@@ -99,7 +99,7 @@ body {
   text-align: justified;
   position: absolute;
   top: 600px;
-  left: 50px;
+  left: 500px;
   font-family: "Kanit", sans-serif;
   opacity: 0.7;
   padding-left: 10px;
@@ -111,10 +111,10 @@ body {
 
 .HeroImage {
   padding-top: 30px;
-  padding-left: 100px;
-  padding-right: 100px;
+  padding-left: 50px;
+  padding-right: 10px;
   padding-bottom:30px;
-  scale: 90%; 
+  scale: 95%; 
   width:100%;
 }
 

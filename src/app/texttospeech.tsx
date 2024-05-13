@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type AuraModel =
   | "aura-asteria-en"
@@ -49,12 +49,16 @@ export default function TextToSpeech({
 
   if (!audioURL) return <div>Loading...</div>;
   return (
-    <audio
-      className="w-full p-2"
-      src={audioURL}
-      controls={showControls}
-      autoPlay={autoPlay}
-    />
+    <iframe allow="autoplay" id="iframeAudio" className="opacity-0">
+
+      <audio
+          className="w-full p-2 opacity-0"
+          src={audioURL}
+          controls={showControls}
+          autoPlay={autoPlay}
+        />
+    </iframe>
+
   );
 }
 
